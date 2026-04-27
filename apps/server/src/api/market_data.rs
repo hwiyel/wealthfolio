@@ -291,6 +291,24 @@ async fn get_exchanges() -> Json<Vec<ExchangeInfo>> {
     Json(wealthfolio_market_data::get_exchange_list())
 }
 
+#[derive(serde::Deserialize)]
+struct FetchDividendsQuery {
+    symbol: String,
+}
+
+async fn fetch_yahoo_dividends(
+    Query(q): Query<FetchDividendsQuery>,
+) -> ApiResult<Json<Vec<YahooDividend>>> {
+    let provider = wealthfolio_market_data::YahooProvider::new()
+        .await
+        .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?;
+    let dividends = provider
+        .fetch_dividends(&q.symbol)
+        .await
+        .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?;
+    Ok(Json(dividends))
+}
+
 pub fn router() -> Router<Arc<AppState>> {
     Router::new()
         .route("/exchanges", get(get_exchanges))
@@ -310,4 +328,5 @@ pub fn router() -> Router<Arc<AppState>> {
         .route("/market-data/quotes/import", post(import_quotes_csv))
         .route("/market-data/sync/history", post(sync_history_quotes))
         .route("/market-data/sync", post(sync_market_data))
+        .route("/market-data/dividends", get(fetch_yahoo_dividends))
 }
