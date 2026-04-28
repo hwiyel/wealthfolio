@@ -243,12 +243,13 @@ impl YahooProvider {
         let crumb_data = self.ensure_crumb().await?;
 
         let now = chrono::Utc::now().timestamp();
-        let two_years_ago = now - 2 * 365 * 24 * 60 * 60;
+        //let two_years_ago = now - 2 * 365 * 24 * 60 * 60;
+        let five_years_ago = now - 5 * 365 * 24 * 60 * 60;
         let encoded = urlencoding::encode(symbol);
         let url = format!(
             "https://query1.finance.yahoo.com/v8/finance/chart/{}?interval=1d&period1={}&period2={}&events=div&crumb={}",
             encoded,
-            two_years_ago,
+            five_years_ago,
             now,
             urlencoding::encode(&crumb_data.crumb)
         );
