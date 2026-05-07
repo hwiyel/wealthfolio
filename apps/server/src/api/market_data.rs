@@ -296,7 +296,7 @@ struct FetchDividendsQuery {
     symbol: String,
 }
 
-async fn fetch_yahoo_dividends(
+async fn fetch_dividends(
     Query(q): Query<FetchDividendsQuery>,
 ) -> ApiResult<Json<Vec<YahooDividend>>> {
     let provider = wealthfolio_market_data::YahooProvider::new()
@@ -328,5 +328,5 @@ pub fn router() -> Router<Arc<AppState>> {
         .route("/market-data/quotes/import", post(import_quotes_csv))
         .route("/market-data/sync/history", post(sync_history_quotes))
         .route("/market-data/sync", post(sync_market_data))
-        .route("/market-data/dividends", get(fetch_yahoo_dividends))
+        .route("/market-data/dividends", get(fetch_dividends))
 }
